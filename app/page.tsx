@@ -5,7 +5,7 @@ import images from '@/public/img';
 
 export default function Home() {
   //
-  console.log(process.env.MONGO_URI);
+  // console.log(process.env.RESEND_KEY);
   //
   return (
     <main>

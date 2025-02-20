@@ -11,23 +11,30 @@ const options = {
     strict: true,
     deprecationErrors: true,
   },
+  connectTimeoutMS: 30000, // Add timeout
+  socketTimeoutMS: 45000, // Add socket timeout
 };
 
 let client;
 let clientPromise;
 
 if (process.env.NODE_ENV === 'development') {
-  let globalWithMongo = global;
-  globalWithMongo._mongoClientPromise = undefined;
+  let globalWithMongo = global as any;
 
   if (!globalWithMongo._mongoClientPromise) {
     client = new MongoClient(uri, options);
-    globalWithMongo._mongoClientPromise = client.connect();
+    globalWithMongo._mongoClientPromise = client.connect().catch((err) => {
+      console.error('MongoDB connection error:', err);
+      throw err;
+    });
   }
   clientPromise = globalWithMongo._mongoClientPromise;
 } else {
   client = new MongoClient(uri, options);
-  clientPromise = client.connect();
+  clientPromise = client.connect().catch((err) => {
+    console.error('MongoDB connection error:', err);
+    throw err;
+  });
 }
 
 export default clientPromise;
